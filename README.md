@@ -32,5 +32,3 @@ mvn javadoc:javadoc
 ```  
 
 
-![alt text](https://artofimmersion.files.wordpress.com/2014/11/theoffice_dundermifflincom_fuse.jpg)
-

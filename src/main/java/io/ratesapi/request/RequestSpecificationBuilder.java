@@ -38,13 +38,10 @@ public class RequestSpecificationBuilder {
 
         RequestSpecification requestSpecification = buildRequestSpecificationWithoutAnyParams();
 
-        for(Map.Entry<String, Object> entry : parameters.entrySet()) {
-
-            String paramName = entry.getKey();
-            Object paramValue = entry.getValue();
+        for(Map.Entry<String, Object> parameter : parameters.entrySet()) {
 
             requestSpecification
-                    .param(paramName, paramValue);
+                    .param(parameter.getKey(), parameter.getValue());
         }
 
         return requestSpecification;
