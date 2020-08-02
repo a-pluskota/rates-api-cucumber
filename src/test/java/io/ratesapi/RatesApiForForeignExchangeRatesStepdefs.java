@@ -87,9 +87,11 @@ public class RatesApiForForeignExchangeRatesStepdefs {
 
         this.requestSpecificationForForeignExchangeRates
                 = new RequestSpecificationBuilder()
-                .buildRequestSpecificationWithOneParam(
+                .buildRequestSpecificationWithTwoParams(
                         paramName,
-                        a)
+                        firstParamValue,
+                        paramName,
+                        secondParamValue)
                 .log()
                 .all();
     }
