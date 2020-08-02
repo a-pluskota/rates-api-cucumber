@@ -2,6 +2,10 @@ package io.ratesapi.request;
 
 import com.jayway.restassured.specification.RequestSpecification;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static com.jayway.restassured.RestAssured.given;
 
 /**
@@ -23,39 +27,27 @@ public class RequestSpecificationBuilder {
     }
 
     /**
-     * Uses REST assured to specify how the request will look like with one additional parameter.
+     * Uses REST assured to specify how the request will look like with two additional parameters
      *
-     * @param paramName Specify a parameter name that'll be sent with the request
-     * @param paramValue Specify a parameter paramName value that'll be sent with the request
+     * @param parameters HashMap of parameters to send, where keys specify a parameters names
+     * and values specify a parameters values
      * @return The request specification
      */
-    public RequestSpecification buildRequestSpecificationWithOneParam(
-            String paramName,
-            String paramValue
+    public RequestSpecification buildRequestSpecificationWithParams(
+            HashMap<String, Object> parameters
     ) {
 
-        return buildRequestSpecificationWithoutAnyParams()
-                .param(paramName, paramValue);
-    }
+        RequestSpecification requestSpecification = buildRequestSpecificationWithoutAnyParams();
 
-    /**
-     * Uses REST assured to specify how the request will look like with two additional parameters.
-     *
-     * @param firstParamName Specify a first parameter name that'll be sent with the request
-     * @param firstParamValue Specify a parameter firstParamValue value that'll be sent with the request
-     * @param secondParamName Specify a second parameter name that'll be sent with the request
-     * @param secondParamValue Specify a parameter secondParamName value that'll be sent with the request
-     * @return The request specification
-     */
-    public RequestSpecification buildRequestSpecificationWithTwoParams(
-            String firstParamName,
-            String firstParamValue,
-            String secondParamName,
-            String secondParamValue
-    ) {
+        for(Map.Entry<String, Object> entry : parameters.entrySet()) {
 
-        return buildRequestSpecificationWithoutAnyParams()
-                .param(firstParamName, firstParamValue)
-                .param(secondParamName, secondParamValue);
+            String paramName = entry.getKey();
+            Object paramValue = entry.getValue();
+
+            requestSpecification
+                    .param(paramName, paramValue);
+        }
+
+        return requestSpecification;
     }
 }

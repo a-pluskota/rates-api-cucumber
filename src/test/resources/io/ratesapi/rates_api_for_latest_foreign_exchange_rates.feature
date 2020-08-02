@@ -135,7 +135,7 @@ Feature: Rates API for Latest Foreign Exchange rates
       | ERR           | ERR        | Base 'ERR' is not supported. |
 
   @rates_api_latest_failing_test
-  Scenario: Fail test of validate the response bad request status for the latest reference exchange rates without using any additional parameters.
+  Scenario: Failing test of validate the response for the latest reference exchange rates without using any additional parameters.
     Given Prepare the reference exchange rates request without using any additional parameters
     When Submit a request with the GET method to the correct API url of the latest reference exchange rates
     Then The status code of the returned response is 400

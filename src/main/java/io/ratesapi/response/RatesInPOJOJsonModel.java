@@ -1,10 +1,10 @@
 package io.ratesapi.response;
 
 /**
- * This class provides a rates API field rates response model that allows
- * easy reading and validation of data received from the server.
+ * This class provides a rates API field rates response model in Plain Old Java Object
+ * that allows easy reading and validation of data received from the server.
  */
-public class RatesInPOGOJsonModel {
+public class RatesInPOJOJsonModel {
 
     private Double GBP;
     private Double HKD;

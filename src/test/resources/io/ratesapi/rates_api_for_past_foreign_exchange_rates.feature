@@ -164,7 +164,6 @@ Feature: Rates API for Past Foreign Exchange rates
       | 19990401   |
 
   @rates_api_past_13
-    @a
   Scenario Outline: Validate the response for the past reference exchange rates with incorrect date parameter.
     Given Prepare the reference exchange rates request without using any additional parameters
     When Submit a request with the GET method to the correct API url with date "<date_value>" of the past reference exchange rates

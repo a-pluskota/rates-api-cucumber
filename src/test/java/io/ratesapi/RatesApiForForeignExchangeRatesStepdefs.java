@@ -8,11 +8,12 @@ import io.cucumber.java.en.When;
 import io.ratesapi.helpers.DateHelper;
 import io.ratesapi.request.RequestBuilder;
 import io.ratesapi.request.RequestSpecificationBuilder;
-import io.ratesapi.response.ErrorResponseInPOGOJsonModel;
-import io.ratesapi.response.ResponseInPOGOJsonModel;
+import io.ratesapi.response.ErrorResponseInPOJOJsonModel;
+import io.ratesapi.response.ResponseInPOJOJsonModel;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 
 import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.junit.Assert.assertEquals;
@@ -28,15 +29,15 @@ public class RatesApiForForeignExchangeRatesStepdefs {
             = "Error response field do not have correct value.";
 
     private RequestSpecification requestSpecificationForForeignExchangeRates;
+    private HashMap<String, Object> mapOfParametersOfRequestForForeignExchangeRates;
     private ValidatableResponse validatableResponseFromForeignExchangeRates;
-    private ResponseInPOGOJsonModel responseFromForeignExchangeRatesInPOGOJsonModel;
-    private ErrorResponseInPOGOJsonModel errorResponseFromForeignExchangeRatesInPOGOJsonModel;
+    private ResponseInPOJOJsonModel responseFromForeignExchangeRatesInPOJOJsonModel;
+    private ErrorResponseInPOJOJsonModel errorResponseFromForeignExchangeRatesInPOGOJsonModel;
 
     @Given("Prepare the reference exchange rates request without using any additional parameters")
     public void prepare_the_reference_exchange_rates_request_without_using_any_additional_parameters() {
 
-        this.requestSpecificationForForeignExchangeRates
-                = new RequestSpecificationBuilder()
+        this.requestSpecificationForForeignExchangeRates = new RequestSpecificationBuilder()
                 .buildRequestSpecificationWithoutAnyParams()
                 .log()
                 .all();
@@ -48,11 +49,11 @@ public class RatesApiForForeignExchangeRatesStepdefs {
             String paramValue
     ) {
 
-        this.requestSpecificationForForeignExchangeRates
-                = new RequestSpecificationBuilder()
-                .buildRequestSpecificationWithOneParam(
-                        paramName,
-                        paramValue)
+        this.mapOfParametersOfRequestForForeignExchangeRates = new HashMap();
+        this.mapOfParametersOfRequestForForeignExchangeRates.put(paramName, paramValue);
+
+        this.requestSpecificationForForeignExchangeRates = new RequestSpecificationBuilder()
+                .buildRequestSpecificationWithParams(this.mapOfParametersOfRequestForForeignExchangeRates)
                 .log()
                 .all();
     }
@@ -65,15 +66,15 @@ public class RatesApiForForeignExchangeRatesStepdefs {
             String baseParamValue
     ) {
 
-        this.requestSpecificationForForeignExchangeRates
-                = new RequestSpecificationBuilder()
-                .buildRequestSpecificationWithTwoParams(
-                        symbolsParamName,
-                        symbolsParamValue,
-                        baseParamName,
-                        baseParamValue)
+        this.mapOfParametersOfRequestForForeignExchangeRates = new HashMap();
+        this.mapOfParametersOfRequestForForeignExchangeRates.put(symbolsParamName, symbolsParamValue);
+        this.mapOfParametersOfRequestForForeignExchangeRates.put(baseParamName, baseParamValue);
+
+        this.requestSpecificationForForeignExchangeRates = new RequestSpecificationBuilder()
+                .buildRequestSpecificationWithParams(this.mapOfParametersOfRequestForForeignExchangeRates)
                 .log()
                 .all();
+
     }
 
     @Given("Prepare the reference exchange rates request using parameter {string} with two values {string} and {string}")
@@ -83,15 +84,13 @@ public class RatesApiForForeignExchangeRatesStepdefs {
             String secondParamValue
     ) {
 
-        String a = firstParamValue.concat(",").concat(secondParamValue);
+        String concatParamValue = firstParamValue.concat(",").concat(secondParamValue);
 
-        this.requestSpecificationForForeignExchangeRates
-                = new RequestSpecificationBuilder()
-                .buildRequestSpecificationWithTwoParams(
-                        paramName,
-                        firstParamValue,
-                        paramName,
-                        secondParamValue)
+        this.mapOfParametersOfRequestForForeignExchangeRates = new HashMap();
+        this.mapOfParametersOfRequestForForeignExchangeRates.put(paramName, concatParamValue);
+
+        this.requestSpecificationForForeignExchangeRates = new RequestSpecificationBuilder()
+                .buildRequestSpecificationWithParams(this.mapOfParametersOfRequestForForeignExchangeRates)
                 .log()
                 .all();
     }
@@ -120,8 +119,7 @@ public class RatesApiForForeignExchangeRatesStepdefs {
                     .ofPattern("yyyy-MM-dd"));
         }
 
-        this.validatableResponseFromForeignExchangeRates
-                = new RequestBuilder(this.requestSpecificationForForeignExchangeRates)
+        this.validatableResponseFromForeignExchangeRates = new RequestBuilder(this.requestSpecificationForForeignExchangeRates)
                 .sendRequestForPastForeignExchangeRates(date)
                 .then()
                 .assertThat()
@@ -150,10 +148,9 @@ public class RatesApiForForeignExchangeRatesStepdefs {
     @Then("The response has correct field names and data types")
     public void the_response_has_correct_field_names_and_data_types() {
 
-        this.responseFromForeignExchangeRatesInPOGOJsonModel
-                = validatableResponseFromForeignExchangeRates
+        this.responseFromForeignExchangeRatesInPOJOJsonModel = validatableResponseFromForeignExchangeRates
                 .extract()
-                .as(ResponseInPOGOJsonModel.class);
+                .as(ResponseInPOJOJsonModel.class);
     }
 
     @Then("The response field base contains value {string}")
@@ -163,7 +160,7 @@ public class RatesApiForForeignExchangeRatesStepdefs {
 
         assertEquals(BASE_FIELD_ASSERTION_MESSAGE,
                 baseFieldExpectedValue,
-                this.responseFromForeignExchangeRatesInPOGOJsonModel.getBase());
+                this.responseFromForeignExchangeRatesInPOJOJsonModel.getBase());
     }
 
     @Then("The response field rates contains field {string}")
@@ -180,16 +177,15 @@ public class RatesApiForForeignExchangeRatesStepdefs {
 
         assertTrue(DATE_FIELD_ASSERTION_MESSAGE,
                 new DateHelper().matches(
-                        this.responseFromForeignExchangeRatesInPOGOJsonModel.getDate()));
+                        this.responseFromForeignExchangeRatesInPOJOJsonModel.getDate()));
     }
 
     @Then("The response contains error field")
     public void the_response_contains_error_field() {
 
-        this.errorResponseFromForeignExchangeRatesInPOGOJsonModel
-                = validatableResponseFromForeignExchangeRates
+        this.errorResponseFromForeignExchangeRatesInPOGOJsonModel = validatableResponseFromForeignExchangeRates
                 .extract()
-                .as(ErrorResponseInPOGOJsonModel.class);
+                .as(ErrorResponseInPOJOJsonModel.class);
     }
 
     @Then("The response field error contains {string}")
@@ -209,7 +205,7 @@ public class RatesApiForForeignExchangeRatesStepdefs {
     ) {
         assertEquals(DATE_FIELD_ASSERTION_MESSAGE,
                 dateFieldExpectedValue,
-                this.responseFromForeignExchangeRatesInPOGOJsonModel.getDate());
+                this.responseFromForeignExchangeRatesInPOJOJsonModel.getDate());
     }
 
 }
