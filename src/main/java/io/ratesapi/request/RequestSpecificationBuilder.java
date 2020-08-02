@@ -3,7 +3,6 @@ package io.ratesapi.request;
 import com.jayway.restassured.specification.RequestSpecification;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
