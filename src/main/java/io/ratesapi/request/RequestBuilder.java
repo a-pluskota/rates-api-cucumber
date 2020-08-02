@@ -33,5 +33,22 @@ public class RequestBuilder {
                 .get(RATES_API_LATEST_URL);
     }
 
+    /**
+     * Uses REST assured to send request for historical foreign exchange rates.
+     *
+     * @param date any date since 1999 in yyyy-MM-dd format
+     * @return The response with the data from historical foreign exchange rates.
+     */
+    public Response sendRequestForPastForeignExchangeRates(
+            String date
+    ) {
 
+        String pastForeignExchangeRatesUrl = RATES_API_BASE_URL
+                .concat("/")
+                .concat(date);
+
+        return this.requestSpecificationForForeignExchangeRates
+                .when()
+                .get(pastForeignExchangeRatesUrl);
+    }
 }

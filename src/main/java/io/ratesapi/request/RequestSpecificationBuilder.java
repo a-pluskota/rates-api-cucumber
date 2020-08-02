@@ -7,7 +7,7 @@ import static com.jayway.restassured.RestAssured.given;
 /**
  * @see <a href="http://ratesapi.io/documentation/">Rates API</a>
  * <p>
- * This class provides methods for creating and sending request specification to rates API.
+ * This class provides methods for creating request specification to rates API.
  */
 public class RequestSpecificationBuilder {
 

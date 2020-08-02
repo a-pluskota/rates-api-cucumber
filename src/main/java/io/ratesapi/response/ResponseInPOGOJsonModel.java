@@ -1,5 +1,9 @@
 package io.ratesapi.response;
 
+/**
+ * This class provides a rates API response model that allows
+ * easy reading and validation of data received from the server.
+ */
 public class ResponseInPOGOJsonModel {
 
     private String base;

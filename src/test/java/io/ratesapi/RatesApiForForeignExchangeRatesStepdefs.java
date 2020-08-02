@@ -11,19 +11,29 @@ import io.ratesapi.request.RequestSpecificationBuilder;
 import io.ratesapi.response.ErrorResponseInPOGOJsonModel;
 import io.ratesapi.response.ResponseInPOGOJsonModel;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import static org.hamcrest.collection.IsMapContaining.hasKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class RatesApiForLatestForeignExchangeRatesStepdefs {
+public class RatesApiForForeignExchangeRatesStepdefs {
+
+    private static final String BASE_FIELD_ASSERTION_MESSAGE
+            = "Base response field do not have correct value.";
+    private static final String DATE_FIELD_ASSERTION_MESSAGE
+            = "Date response field do not have correct value.";
+    private static final String ERROR_FIELD_ASSERTION_MESSAGE
+            = "Error response field do not have correct value.";
 
     private RequestSpecification requestSpecificationForForeignExchangeRates;
     private ValidatableResponse validatableResponseFromForeignExchangeRates;
     private ResponseInPOGOJsonModel responseFromForeignExchangeRatesInPOGOJsonModel;
     private ErrorResponseInPOGOJsonModel errorResponseFromForeignExchangeRatesInPOGOJsonModel;
 
-    @Given("Prepare the latest reference exchange rates request without using any additional parameters")
-    public void prepare_the_latest_reference_exchange_rates_request_without_using_any_additional_parameters() {
+    @Given("Prepare the reference exchange rates request without using any additional parameters")
+    public void prepare_the_reference_exchange_rates_request_without_using_any_additional_parameters() {
 
         this.requestSpecificationForForeignExchangeRates
                 = new RequestSpecificationBuilder()
@@ -32,8 +42,8 @@ public class RatesApiForLatestForeignExchangeRatesStepdefs {
                 .all();
     }
 
-    @Given("Prepare the latest reference exchange rates request using parameter {string} with value {string}")
-    public void prepare_the_latest_reference_exchange_rates_request_using_parameter_with_value(
+    @Given("Prepare the reference exchange rates request using parameter {string} with value {string}")
+    public void prepare_the_reference_exchange_rates_request_using_parameter_with_value(
             String paramName,
             String paramValue
     ) {
@@ -47,8 +57,8 @@ public class RatesApiForLatestForeignExchangeRatesStepdefs {
                 .all();
     }
 
-    @Given("Prepare the latest reference exchange rates request using parameters {string} with value {string} and {string} with value {string}")
-    public void prepare_the_latest_reference_exchange_rates_request_using_parameters_with_value_and_with_value(
+    @Given("Prepare the reference exchange rates request using parameters {string} with value {string} and {string} with value {string}")
+    public void prepare_the_reference_exchange_rates_request_using_parameters_with_value_and_with_value(
             String symbolsParamName,
             String symbolsParamValue,
             String baseParamName,
@@ -66,8 +76,8 @@ public class RatesApiForLatestForeignExchangeRatesStepdefs {
                 .all();
     }
 
-    @Given("Prepare the latest reference exchange rates request using parameter {string} with two values {string} and {string}")
-    public void prepare_the_latest_reference_exchange_rates_request_using_parameter_with_two_values(
+    @Given("Prepare the reference exchange rates request using parameter {string} with two values {string} and {string}")
+    public void prepare_the_reference_exchange_rates_request_using_parameter_with_two_values(
             String paramName,
             String firstParamValue,
             String secondParamValue
@@ -90,6 +100,27 @@ public class RatesApiForLatestForeignExchangeRatesStepdefs {
         this.validatableResponseFromForeignExchangeRates
                 = new RequestBuilder(this.requestSpecificationForForeignExchangeRates)
                 .sendRequestForLatestForeignExchangeRates()
+                .then()
+                .assertThat()
+                .log()
+                .all();
+    }
+
+    @When("Submit a request with the GET method to the correct API url with date {string} of the past reference exchange rates")
+    public void submit_a_request_with_the_get_method_to_the_correct_api_url_with_date_of_the_past_reference_exchange_rates(
+            String date
+    ) {
+
+        if (date.equals("today")) {
+            date = LocalDate
+                    .now()
+                    .format(DateTimeFormatter
+                    .ofPattern("yyyy-MM-dd"));
+        }
+
+        this.validatableResponseFromForeignExchangeRates
+                = new RequestBuilder(this.requestSpecificationForForeignExchangeRates)
+                .sendRequestForPastForeignExchangeRates(date)
                 .then()
                 .assertThat()
                 .log()
@@ -128,7 +159,7 @@ public class RatesApiForLatestForeignExchangeRatesStepdefs {
             String baseFieldExpectedValue
     ) {
 
-        assertEquals(AssertionMessagesFactory.BASE_FIELD_ASSERTION_MESSAGE,
+        assertEquals(BASE_FIELD_ASSERTION_MESSAGE,
                 baseFieldExpectedValue,
                 this.responseFromForeignExchangeRatesInPOGOJsonModel.getBase());
     }
@@ -145,7 +176,7 @@ public class RatesApiForLatestForeignExchangeRatesStepdefs {
     @Then("The response field date contains value of date in_yyyy_mm_dd format")
     public void the_response_field_date_contains_value_of_date_in_yyyy_mm_dd_format() {
 
-        assertTrue(AssertionMessagesFactory.DATE_FIELD_ASSERTION_MESSAGE,
+        assertTrue(DATE_FIELD_ASSERTION_MESSAGE,
                 new DateHelper().matches(
                         this.responseFromForeignExchangeRatesInPOGOJsonModel.getDate()));
     }
@@ -164,9 +195,19 @@ public class RatesApiForLatestForeignExchangeRatesStepdefs {
             String expectedValidationMessage
     ) {
 
-        assertTrue(AssertionMessagesFactory.BASE_FIELD_ASSERTION_MESSAGE,
+        assertTrue(ERROR_FIELD_ASSERTION_MESSAGE,
                 this.errorResponseFromForeignExchangeRatesInPOGOJsonModel
                         .getError()
                         .contains(expectedValidationMessage));
     }
+
+    @Then("The response field date contains value {string}")
+    public void the_response_field_date_contains_value(
+            String dateFieldExpectedValue
+    ) {
+        assertEquals(DATE_FIELD_ASSERTION_MESSAGE,
+                dateFieldExpectedValue,
+                this.responseFromForeignExchangeRatesInPOGOJsonModel.getDate());
+    }
+
 }

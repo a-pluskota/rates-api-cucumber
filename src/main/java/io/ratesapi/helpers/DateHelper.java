@@ -3,7 +3,7 @@ package io.ratesapi.helpers;
 import java.util.regex.Pattern;
 
 /**
- *
+ * This class contains methods to help you manage the date and its format.
  */
 public class DateHelper implements DateMatcher {
 
